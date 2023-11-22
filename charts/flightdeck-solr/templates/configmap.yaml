@@ -1,0 +1,13 @@
+apiVersion: v1
+data:
+  flightdeck-solr.yml: |
+    flightdeck_solr:
+      port: {{ .Values.service.port }}
+      {{- with .Values.config.cores }}
+      cores:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+kind: ConfigMap
+metadata:
+  namespace: {{ .Release.Namespace | quote }}
+  name: {{ template "flightdeck-solr.fullname" . }}-config

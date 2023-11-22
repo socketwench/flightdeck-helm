@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "flightdeck-db.fullname" . }}
+  labels:
+    {{- include "flightdeck-db.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "flightdeck-db.selectorLabels" . | nindent 6 }}
+  {{- if .Values.persistence.enabled }}
+  volumeClaimTemplates:
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: data
+    {{- if .Values.persistence.labels.enabled }}
+      labels:
+        release: {{ .Release.Name | quote }}
+        chart: {{ .Chart.Name }}
+        app: {{ include "flightdeck-db.fullname" . }}
+        {{- include "flightdeck-db.labels" . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.persistence.annotations  }}
+      annotations:
+        {{- toYaml . | indent 8 }}
+    {{- end }}
+    spec:
+      {{- toYaml .Values.volumeClaimTemplate | nindent 6 }}
+  {{- end }}
+  serviceName: {{ include "flightdeck-db.fullname" . }}
+  template:
+    metadata:
+      labels:
+        {{- include "flightdeck-db.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "flightdeck-db.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+    {{- if .Values.persistence.enabled }}
+      initContainers:
+        - name: fix-pvc-permissions
+          image: alpine
+          command:
+            - "sh"
+            - "-c"
+            - "chown -R 1000:1000 /var/lib/mysql"
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/mysql
+    {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ include "flightdeck_db.image" . }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: mysql
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - mountPath: /config/mysql
+              name: vol-config-flightdeck-db
+            {{- if .Values.persistence.enabled }}
+            - name: data
+              mountPath: /var/lib/mysql
+            {{- end }}
+          {{- if .Values.extraVolumeMounts }}
+            {{- toYaml .Values.extraVolumeMounts | nindent 12 }}
+          {{- end }}
+
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      volumes:
+        - name: vol-config-flightdeck-db
+          configMap:
+            name: {{ template "flightdeck-db.fullname" . }}-config
+      {{- if .Values.extraVolumes }}
+        {{- toYaml .Values.extraVolumes | nindent 8 }}
+      {{- end }}
+
