@@ -1,3 +1,4 @@
+{{- if .Values.service.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -7,15 +8,16 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ .Values.service.httpPort }}
       targetPort: http
       protocol: TCP
       name: http
   {{- if .Values.varnish.enabled }}
-    - port: {{ .Values.varnish.service.port }}
+    - port: {{ .Values.service.varnishPort }}
       targetPort: varnish
       protocol: TCP
       name: varnish
   {{- end }}
   selector:
     {{- include "flightdeck-web.selectorLabels" . | nindent 4 }}
+{{- end }}

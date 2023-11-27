@@ -6,6 +6,9 @@ metadata:
     {{- include "flightdeck-solr.labels" . | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
+  {{- with .Values.service.clusterIP  }}
+  clusterIP: {{ . | quote }}
+  {{- end }}
   ports:
     - port: {{ .Values.service.port }}
       targetPort: solr

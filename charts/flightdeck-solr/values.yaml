@@ -41,6 +41,7 @@ securityContext: {}
 
 service:
   type: ClusterIP
+  clusterIP: None
   port: 8983
 
 ingress:
@@ -84,20 +85,20 @@ persistence:
   annotations: {}
 
 extraVolumes:
- - name: example-solr
-   configMap:
-     name: example-solr
- - name: example-solr-lang
-   configMap:
-     name: example-solr-lang
+# - name: example-solr
+#   configMap:
+#     name: example-solr
+# - name: example-solr-lang
+#   configMap:
+#     name: example-solr-lang
 
 extraVolumeMounts:
- - name: example-solr
-   mountPath: /config/my-solr-core
-   readOnly: true
- - name: example-solr-lang
-   mountPath: /config/my-solr-core/lang
-   readOnly: true
+# - name: example-solr
+#   mountPath: /config/my-solr-core
+#   readOnly: true
+# - name: example-solr-lang
+#   mountPath: /config/my-solr-core/lang
+#   readOnly: true
 
 nodeSelector: {}
 

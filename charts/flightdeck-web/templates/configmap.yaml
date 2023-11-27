@@ -25,7 +25,7 @@ data:
   flight-deck-varnish.yml: |
     flightdeck_varnish:
       secretFile: "/config/varnish-secret/secret"
-      hostPort: "{{ .Values.varnish.service.port }}"
+      hostPort: "{{ .Values.service.varnishPort }}"
       controlPort: "6082"
       memSize: "{{ .Values.varnish.config.memSize }}"
       storageFile: "{{ .Values.varnish.config.storageFile }}"

@@ -52,6 +52,7 @@ securityContext: {}
 
 service:
   type: ClusterIP
+  clusterIP: None
   port: 3306
 
 resources:
@@ -81,18 +82,12 @@ persistence:
     enabled: false
   annotations: {}
 
-extraVolumes: []
-# - name: mysql-admin
-#   secret:
-#     secretName: mysql-admin
+extraVolumes:
 # - name: my-mysql
 #   secret:
 #     secretName: my-mysql
 
-extraVolumeMounts: []
-# - name: mysql-admin
-#   mountPath: /config/mysql-admin
-#   readOnly: true
+extraVolumeMounts:
 # - name: my-mysql
 #   mountPath: /config/my-mysql
 #   readOnly: true

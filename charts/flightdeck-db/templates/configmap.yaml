@@ -1,7 +1,7 @@
 apiVersion: v1
 data:
   flightdeck-db.yml: |
-    mysql_root_password_file: "{{ .Values.config.mysql_root_password_file }}"
+    mysql_root_password_file: "/config/mysql-admin/root-pass.txt"
     {{- with .Values.config.mysql_databases }}
     mysql_databases:
       {{- toYaml . | nindent 6 }}

@@ -18,13 +18,19 @@ spec:
       labels:
         {{- include "flightdeck-web.selectorLabels" . | nindent 8 }}
     spec:
-    {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-    {{- end }}
       serviceAccountName: {{ include "flightdeck-web.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- range . }}
+        - name: {{ . }}
+        {{- end }}
+      {{- end }}
+      {{- with .Values.hostAliases }}
+      hostAliases:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: web
           securityContext:
@@ -33,8 +39,16 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.service.port }}
+              containerPort: {{ .Values.service.httpPort }}
               protocol: TCP
+          {{- with .Values.env }}
+          env:
+              {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.envFrom }}
+          envFrom:
+              {{- toYaml . | nindent 12 }}
+          {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
@@ -53,9 +67,17 @@ spec:
             {{- toYaml .Values.varnish.securityContext | nindent 12 }}
           image: "{{ include "flightdeck-web.varnishImage" . }}"
           imagePullPolicy: {{ .Values.varnish.image.pullPolicy }}
+          {{- with .Values.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.envFrom }}
+          envFrom:
+              {{- toYaml . | nindent 12 }}
+          {{- end }}
           ports:
             - name: varnish
-              containerPort: {{ .Values.varnish.service.port }}
+              containerPort: {{ .Values.service.varnishPort }}
               protocol: TCP
           resources:
             {{- toYaml .Values.varnish.resources | nindent 12 }}
@@ -71,6 +93,14 @@ spec:
             {{- toYaml .Values.memcache.securityContext | nindent 12 }}
           image: "{{ include "flightdeck-web.memcacheImage" . }}"
           imagePullPolicy: {{ .Values.memcache.image.pullPolicy }}
+          {{- with .Values.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.envFrom }}
+          envFrom:
+              {{- toYaml . | nindent 12 }}
+          {{- end }}
           ports:
             - name: memcache
               containerPort: {{ .Values.memcache.config.port }}

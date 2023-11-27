@@ -1,18 +1,86 @@
 {{- $fullName := include "flightdeck-web.fullname" . -}}
 {{- $labels := include "flightdeck-web.labels" . -}}
-{{- range $name, $item := .Values.cronjobs }}
+{{- range $name, $job := .Values.jobs }}
+---
 apiVersion: batch/v1
 kind: CronJob
 metadata:
-  name: {{ $fullName }}-{{ lower $name }}
+  name: "{{ $fullName }}-{{ $name }}"
   labels:
     {{- $labels | nindent 4 }}
-  {{- with $item.annotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
-{{- with $item.spec }}
 spec:
-  {{- toYaml . | nindent 2 }}
-{{- end }}
+  concurrencyPolicy: {{ $job.concurrencyPolicy | default "Forbid" }}
+  failedJobsHistoryLimit: {{ $job.failedJobsHistoryLimit | default "1" }}
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- $labels | nindent 14 }}
+        spec:
+          serviceAccountName: {{ include "flightdeck-web.serviceAccountName" $ }}
+          securityContext:
+            {{- toYaml $.Values.securityContext | nindent 12 }}
+          containers:
+          - image: {{ include "flightdeck-web.image" $ | quote }}
+            imagePullPolicy: {{ $.Values.image.pullPolicy }}
+            name: {{ $name }}
+            {{- if $job.command }}
+            command: {{ $job.command }}
+            {{- end }}
+            {{- with $job.args }}
+            args:
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- with $.Values.env }}
+            env:
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- with $.Values.envFrom }}
+            envFrom:
+                {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- with $job.resources }}
+            resources:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+            volumeMounts:
+              - mountPath: /config/web
+                name: vol-config-flightdeck-web                
+            {{- if $.Values.extraVolumeMounts }}
+              {{- toYaml $.Values.extraVolumeMounts | nindent 14 }}
+            {{- end }}
+          {{- with $.Values.hostAliases }}
+          hostAliases:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $.Values.imagePullSecrets }}
+          imagePullSecrets:
+            {{- range . }}
+            - name: {{ . }}
+            {{- end }}
+          {{- end }}
+          {{- with $job.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $job.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $job.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          restartPolicy: {{ $job.restartPolicy | default "OnFailure" }}
+          volumes:
+            - name: vol-config-flightdeck-web
+              configMap:
+                name: '{{ template "flightdeck-web.fullname" $ }}-config'
+          {{- if $.Values.extraVolumes }}
+            {{- toYaml $.Values.extraVolumes | nindent 12 }}
+          {{- end }}
+  schedule: {{ $job.schedule | quote }}
+  successfulJobsHistoryLimit: {{ $job.successfulJobsHistoryLimit | default "0" }}
+  suspend: {{ $job.suspend | default "false" }}
 {{- end }}

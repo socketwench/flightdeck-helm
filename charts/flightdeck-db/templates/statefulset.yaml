@@ -69,6 +69,8 @@ spec:
           volumeMounts:
             - mountPath: /config/mysql
               name: vol-config-flightdeck-db
+            - mountPath: /config/mysql-admin
+              name: vol-config-mysql-admin
             {{- if .Values.persistence.enabled }}
             - name: data
               mountPath: /var/lib/mysql
@@ -93,6 +95,9 @@ spec:
         - name: vol-config-flightdeck-db
           configMap:
             name: {{ template "flightdeck-db.fullname" . }}-config
+        - name: vol-config-mysql-admin
+          secret:
+            secretName: {{ template "flightdeck-db.fullname" . }}-mysql-admin
       {{- if .Values.extraVolumes }}
         {{- toYaml .Values.extraVolumes | nindent 8 }}
       {{- end }}

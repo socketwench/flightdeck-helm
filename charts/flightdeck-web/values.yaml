@@ -5,7 +5,7 @@
 replicaCount: 1
 
 autoscaling:
-  enabled: true
+  enabled: false
   minReplicas: 1
   maxReplicas: 3
   targetCPU: 600
@@ -26,6 +26,17 @@ strategy:
     maxSurge: 0
     maxUnavailable: 1
 
+env: {}
+#  - name: ATMOSPHERE
+#    value: "Class M"
+
+envFrom: {}
+#  - configMapRef:
+#      name: my-config
+#      key: optional-key
+#  - secretRef:
+#      name: my-secret
+
 config:
   vhosts:
     - name: "example.com"
@@ -42,11 +53,7 @@ varnish:
     repository: ten7/flightdeck-varnish-6
     tag: latest
     pullPolicy: IfNotPresent
-  service:
-    type: ClusterIP
-    port: 6081
   config:
-    secretFile: "/config/varnish-secret/secret"
     memSize: "256m"
     storageFile: "/var/lib/varnish/storage.bin"
     storageSize: "1024m"
@@ -91,8 +98,8 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name:
 
-podSecurityContext:
-  fsGroup: 1000
+podSecurityContext: {}
+#  fsGroup: 1000
 
 securityContext: {}
   # capabilities:
@@ -103,8 +110,10 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
+  enabled: false
   type: ClusterIP
-  port: 80
+  httpPort: 80
+  varnishPort: 6081
 
 ingress:
   enabled: false
@@ -113,30 +122,28 @@ ingress:
     # kubernetes.io/tls-acme: "true"
   hosts: []
 #    - host: chart-example.local
-#      paths: []
+#      httpPaths:
+#        - "/uncached"
+#      varnishPaths:
+#        - "/"
   tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+#    - secretName: chart-example-tls
+#      hosts:
+#        - chart-example.local
 
 extraIngresses: {}
 #  myIngressName:
 #    annotations: {}
-#    spec:
-#      rules:
-#        - host: chart-example.local
-#          http:
-#            paths:
-#              - pathType: Prefix
-#                path: /
-#                backend:
-#                  service:
-#                    name: web
-#                    port:
-#                      number: 6081
-#      tls:
-#        - hosts:
-#            - example.com
+#    hosts:
+#      - host: chart-example.test
+#        httpPaths:
+#          - "/uncached"
+#        varnishPaths:
+#          - "/"
+#    tls:
+#      - secretName: chart-example-tls
+#        hosts:
+#          - chart-example.local
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
@@ -158,42 +165,38 @@ nodeSelector: {}
 
 tolerations: []
 
-affinity:
-  podAntiAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-    - labelSelector:
-        matchExpressions:
-        - key: app.kubernetes.io/name
-          operator: In
-          values:
-          - flightdeck-web
-        - key: app.kubernetes.io/instance
-          operator: In
-          values:
-          - my-release-name
-      topologyKey: "kubernetes.io/hostname"
+affinity: {}
+#  podAntiAffinity:
+#    requiredDuringSchedulingIgnoredDuringExecution:
+#    - labelSelector:
+#        matchExpressions:
+#        - key: app.kubernetes.io/name
+#          operator: In
+#          values:
+#          - flightdeck-web
+#        - key: app.kubernetes.io/instance
+#          operator: In
+#          values:
+#          - my-release-name
+#      topologyKey: "kubernetes.io/hostname"
 
-cronjobs: {}
+# Extra cronjobs to run.
+# These run the same container image as the deployment.
+jobs: {}
 #  myCronjobName:
 #    annotations: {}
-#    spec:
-#      concurrencyPolicy: Forbid
-#      failedJobsHistoryLimit: 1
-#      schedule: '*/10 * * * *'
-#      startingDeadlineSeconds: 60
-#      successfulJobsHistoryLimit: 0
-#      suspend: false
-#      jobTemplate:
-#        spec:
-#          backoffLimit: 0
-#          template:
-#            spec:
-#              restartPolicy: OnFailure
-#              containers:
-#                - args:
-#                    - /bin/sh
-#                    - -c
-#                    - 'sleep 300'
-#                  image: alpine
-#                  imagePullPolicy: IfNotPresent
-#                  name: cron
+#    schedule: "*/10 * * * *"
+#    args:
+#      - "/bin/bash"
+#      - "-c"
+#      - "sleep 300"
+#    resources:
+#      limits:
+#        cpu: 600m
+#      requests:
+#        cpu: 250m
+#        memory: 320Mi
+#    failedJobsHistoryLimit: 1
+#    successfulJobsHistoryLimit: 3
+#    concurrencyPolicy: Forbid
+#    restartPolicy: OnFailure
