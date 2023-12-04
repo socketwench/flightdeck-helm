@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   flightdeck-db:
   - apiVersion: v2
+    appVersion: 1.1.3
+    created: "2023-12-04T20:45:45.501527349Z"
+    description: A Helm chart for Kubernetes
+    digest: d14ee9815c82872e37c7eb9b97c9fa15fa3c93ea5e7d7f23ddf9795a91b649dc
+    name: flightdeck-db
+    type: application
+    urls:
+    - https://ten7.github.io/flightdeck-helm/flightdeck-db-1.1.3.tgz
+    version: 1.1.3
+  - apiVersion: v2
     appVersion: 1.1.2
     created: "2023-12-04T20:32:57.887898696Z"
     description: A Helm chart for Kubernetes
@@ -42,6 +52,16 @@ entries:
     - https://ten7.github.io/flightdeck-helm/flightdeck-db-1.0.0.tgz
     version: 1.0.0
   flightdeck-solr:
+  - apiVersion: v2
+    appVersion: 1.1.3
+    created: "2023-12-04T20:45:45.502023444Z"
+    description: A Helm chart for Kubernetes
+    digest: f7c52d9d25fc827a1a003c9e62e4c7cc0f1c0964f7ca7a73823f6e2f87339d21
+    name: flightdeck-solr
+    type: application
+    urls:
+    - https://ten7.github.io/flightdeck-helm/flightdeck-solr-1.1.3.tgz
+    version: 1.1.3
   - apiVersion: v2
     appVersion: 1.1.2
     created: "2023-12-04T20:32:57.888298482Z"
@@ -84,6 +104,16 @@ entries:
     version: 1.0.0
   flightdeck-web:
   - apiVersion: v2
+    appVersion: 1.1.3
+    created: "2023-12-04T20:45:45.502728097Z"
+    description: A Helm chart for Kubernetes
+    digest: d30b72a925ae64ba6843e84a381523178c4a8dc3c06a0f0ae7eada6942cd4073
+    name: flightdeck-web
+    type: application
+    urls:
+    - https://ten7.github.io/flightdeck-helm/flightdeck-web-1.1.3.tgz
+    version: 1.1.3
+  - apiVersion: v2
     appVersion: 1.1.2
     created: "2023-12-04T20:32:57.888844201Z"
     description: A Helm chart for Kubernetes
@@ -123,4 +153,4 @@ entries:
     urls:
     - https://ten7.github.io/flightdeck-helm/flightdeck-web-1.0.0.tgz
     version: 1.0.0
-generated: "2023-12-04T20:32:57.887331286Z"
+generated: "2023-12-04T20:45:45.500874904Z"
