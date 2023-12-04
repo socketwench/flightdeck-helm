@@ -59,7 +59,7 @@ metadata:
       {{- $labels | nindent 4 }}
     {{- with $item.annotations }}
     annotations:
-      {{- toYaml . | nindent 4 }}
+      {{- toYaml . | nindent 6 }}
     {{- end }}
   spec:
     {{- if $item.tls }}
