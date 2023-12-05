@@ -13,6 +13,9 @@ spec:
   failedJobsHistoryLimit: {{ $job.failedJobsHistoryLimit | default "1" }}
   jobTemplate:
     spec:
+      {{- with $job.backoffLimit }}
+      backoffLimit: {{ . }}
+      {{- end }}
       template:
         metadata:
           labels:
