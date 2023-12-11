@@ -9,12 +9,12 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.httpPort }}
-      targetPort: http
+      targetPort: {{ .Values.service.httpPort }}
       protocol: TCP
       name: http
   {{- if .Values.varnish.enabled }}
     - port: {{ .Values.service.varnishPort }}
-      targetPort: varnish
+      targetPort: {{ .Values.service.varnishPort }}
       protocol: TCP
       name: varnish
   {{- end }}
