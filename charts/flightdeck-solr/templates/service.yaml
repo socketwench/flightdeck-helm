@@ -11,7 +11,7 @@ spec:
   {{- end }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: solr
+      targetPort: {{ .Values.service.port }}
       protocol: TCP
       name: solr
   selector:

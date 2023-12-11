@@ -1,0 +1,53 @@
+{{- $fullName := include "flightdeck-web.fullname" . -}}
+{{- $labels := include "flightdeck-web.labels" . -}}
+{{- range $name, $job := .Values.postDeployJobs }}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: "{{ $fullName }}-{{ $name }}"
+  labels:
+    {{- $labels | nindent 4 }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    {{- with $job.hookWeight }}
+    "helm.sh/hook-weight": {{ . | quote }}
+    {{- end }}
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  template:
+    metadata:
+      labels:
+        {{- $labels | nindent 14 }}
+    spec:
+      restartPolicy: Never
+      containers:
+        - image: {{ include "flightdeck-web.image" $ | quote }}
+          imagePullPolicy: {{ $.Values.image.pullPolicy }}
+          name: {{ $name }}
+          {{- if $job.command }}
+          command: {{ $job.command }}
+          {{- end }}
+          {{- with $job.args }}
+          args:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $.Values.env }}
+          env:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $.Values.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $job.resources }}
+          resources:
+            {{- toYaml . | nindent 14 }}
+          {{- end }}
+          volumeMounts:
+            - mountPath: /config/web
+              name: vol-config-flightdeck-web
+          {{- if $.Values.extraVolumeMounts }}
+            {{- toYaml $.Values.extraVolumeMounts | nindent 14 }}
+          {{- end }}
+{{- end }}
