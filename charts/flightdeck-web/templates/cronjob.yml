@@ -24,6 +24,18 @@ spec:
           serviceAccountName: {{ include "flightdeck-web.serviceAccountName" $ }}
           securityContext:
             {{- toYaml $.Values.securityContext | nindent 12 }}
+          {{- with $job.affinity }}
+          affinity:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $job.nodeSelector }}
+          nodeSelector:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with $job.tolerations }}
+          tolerations:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           containers:
           - image: {{ include "flightdeck-web.image" $ | quote }}
             imagePullPolicy: {{ $.Values.image.pullPolicy }}
@@ -62,18 +74,6 @@ spec:
             {{- range . }}
             - name: {{ . }}
             {{- end }}
-          {{- end }}
-          {{- with $job.nodeSelector }}
-          nodeSelector:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with $job.affinity }}
-          affinity:
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
-          {{- with $job.tolerations }}
-          tolerations:
-            {{- toYaml . | nindent 12 }}
           {{- end }}
           restartPolicy: {{ $job.restartPolicy | default "OnFailure" }}
           volumes:
