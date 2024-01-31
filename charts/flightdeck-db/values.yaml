@@ -28,6 +28,7 @@ config:
   mysql_max_allowed_packet: "64M"
   mysql_table_open_cache: "256"
   mysql_query_cache_size: "0"
+  mysql_binlog_expire_logs_seconds: "3600"
 
 
 serviceAccount:
@@ -60,12 +61,10 @@ resources:
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
   # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  limits:
-    cpu: 1000m
-    memory: 1024Mi
+  limits: {}
   requests:
-    cpu: 100m
-    memory: 320Mi
+    cpu: 650m
+    memory: 1000Mi
 
 
 volumeClaimTemplate:
