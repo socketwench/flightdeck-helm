@@ -54,27 +54,10 @@ varnish:
     tag: latest
     pullPolicy: IfNotPresent
   config:
-    memSize: "256m"
+    memSize: "16m"
+    storageEnabled: false
     storageFile: "/var/lib/varnish/storage.bin"
-    storageSize: "1024m"
-    backends:
-      - name: "default"
-        host: "localhost"
-        port: 80
-        probe: no
-        probeHost: "example.com"
-        probeHeaders:
-          - name: "X-Forwarded-Proto"
-            value: "https"
-    skipCache:
-      - "^/update\\.php"
-      - "^/core/install\\.php"
-      - "^/admin"
-      - "^/admin/.*$"
-      - "^/user"
-      - "^/user/.*$"
-      - "^/users/.*$"
-      - "^/flag/.*$"
+    storageSize: "128m"
   securityContext: { }
   resources: {}
 

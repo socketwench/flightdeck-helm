@@ -64,6 +64,10 @@ spec:
           volumeMounts:
             - mountPath: /config/web
               name: vol-config-flightdeck-web
+          {{- if $.Values.varnish.enabled }}
+            - mountPath: /config/varnish-secret
+              name: vol-secret-varnish-secret
+          {{- end }}
           {{- if $.Values.extraVolumeMounts }}
             {{- toYaml $.Values.extraVolumeMounts | nindent 12 }}
           {{- end }}
@@ -71,6 +75,11 @@ spec:
         - name: vol-config-flightdeck-web
           configMap:
             name: '{{ $fullName }}-config'
+      {{- if $.Values.varnish.enabled }}
+        - name: vol-secret-varnish-secret
+          secret:
+            secretName: '{{ $fullName }}-varnish-secret'
+      {{- end }}
       {{- if $.Values.extraVolumes }}
         {{- toYaml $.Values.extraVolumes | nindent 8 }}
       {{- end }}

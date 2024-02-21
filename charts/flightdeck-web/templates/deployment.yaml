@@ -86,6 +86,8 @@ spec:
               name: vol-config-flightdeck-varnish
             - mountPath: /config/varnish-secret
               name: vol-secret-varnish-secret
+            - mountPath: /config/vcl
+              name: vol-config-vcl
       {{- end }}
       {{- if .Values.memcache.enabled }}
         - name: memcache
@@ -134,6 +136,9 @@ spec:
         - name: vol-secret-varnish-secret
           secret:
             secretName: '{{ include "flightdeck-web.fullname" . }}-varnish-secret'
+        - name: vol-config-vcl
+          configMap:
+            name: '{{ template "flightdeck-web.fullname" . }}-vcl'
       {{- end }}
       {{- if .Values.memcache.enabled }}
         - name: vol-config-flightdeck-memcache
