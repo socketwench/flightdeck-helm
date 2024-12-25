@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: ten7/flightdeck-db-10.6
+  repository: socketwench/flightdeck-db-10.11
   tag: latest
   pullPolicy: IfNotPresent
 

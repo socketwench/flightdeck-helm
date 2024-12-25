@@ -5,7 +5,7 @@
 replicaCount: 1
 
 image:
-  repository: ten7/flightdeck-solr-8
+  repository: socketwench/flightdeck-solr-8
   tag: latest
   pullPolicy: IfNotPresent
 

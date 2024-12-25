@@ -17,6 +17,10 @@ spec:
       targetPort: {{ .Values.service.varnishPort }}
       protocol: TCP
       name: varnish
+    - port: {{ .Values.service.varnishControlPort }}
+      targetPort: {{ .Values.service.varnishControlPort }}
+      protocol: TCP
+      name: varnish-control
   {{- end }}
   selector:
     {{- include "flightdeck-web.selectorLabels" . | nindent 4 }}

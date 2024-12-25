@@ -12,7 +12,7 @@ autoscaling:
   targetMemory: 600
 
 image:
-  repository: ten7/flightdeck-web-8.2
+  repository: socketwench/flightdeck-web-8.3
   tag: latest
   pullPolicy: IfNotPresent
 
@@ -50,7 +50,7 @@ config:
 varnish:
   enabled: false
   image:
-    repository: ten7/flightdeck-varnish-6
+    repository: socketwench/flightdeck-varnish-6
     tag: latest
     pullPolicy: IfNotPresent
   config:
@@ -64,7 +64,7 @@ varnish:
 memcache:
   enabled: false
   image:
-    repository: ten7/flightdeck-memcache-1.6
+    repository: socketwench/flightdeck-memcache-1.6
     tag: latest
     pullPolicy: IfNotPresent
   config:
@@ -97,6 +97,7 @@ service:
   type: ClusterIP
   httpPort: 80
   varnishPort: 6081
+  varnishControlPort: 6082
 
 ingress:
   enabled: false
